@@ -8,7 +8,7 @@ use http::StatusCode;
  
 fn main() {
     println!("Hello World");
-    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let listener = TcpListener::bind("0.0.0.0:80").unwrap();
  
     for stream in listener.incoming() {
         println!("Incoming Connection [+]");
