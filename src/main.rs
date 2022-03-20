@@ -70,12 +70,17 @@ fn main() {
             fs::read_to_string(&"./www/500.html")
                 .unwrap_or(format!("reading file content failed [-]")),
         );
+        let register = String::from(
+            fs::read_to_string(&"./www/register.html")
+                .unwrap_or(format!("reading file content failed [-]")),
+        );
         let mut header = format!("{} {}", "HTTP/1.1", http::StatusCode::OK);
         let mut body = String::from("");
         match uri {
             "/" => body = index_content,
             "/home" => body = home_content,
             "/500" => body = five00_content,
+            "/register" => body = register,
             _ => {
                 body = four04_content;
                 header = format!("{} {}", "HTTP/1.1", http::StatusCode::NOT_FOUND)
