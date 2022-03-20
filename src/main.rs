@@ -3,22 +3,23 @@ use std::io::Read;
 use std::io::Write;
 use std::net::TcpListener;
 use std::path::Path;
-use http::StatusCode;
- 
- 
+
 fn main() {
     println!("Hello World");
     let listener = TcpListener::bind("0.0.0.0:80").unwrap();
- 
     for stream in listener.incoming() {
         println!("Incoming Connection [+]");
         let mut stream = stream.unwrap();
         let mut buffer = [0; 1024];
         stream.read(&mut buffer).unwrap();
-        println!("Requeast:\r\n{} ", String::from_utf8_lossy(&buffer[..]));
+        println!("Request:\r\n{} ", String::from_utf8_lossy(&buffer[..]));
         let request = String::from_utf8_lossy(&buffer[..]);
         let request_line = request.lines().next().unwrap();
         let mut parts = request_line.split_whitespace();
+        let vc = request_line.split_whitespace().collect::<Vec<&str>>();
+        if vc.len() < 2 {
+            continue;
+        }
         let method = parts.next().ok_or("Method not specified").unwrap();
         let uri = Path::new(parts.next().ok_or("URI not specified").unwrap());
         let uri_string = uri.as_os_str().to_str().unwrap();
@@ -42,9 +43,7 @@ fn main() {
                 header = format!("{} {}", "HTTP/1.1", http::StatusCode::NOT_FOUND)
             }
         }
- 
         let response = format!("{} \r\n\r\n {}\r\n", header, body);
- 
         stream.write(response.as_bytes()).unwrap();
         stream.flush().unwrap();
     }
