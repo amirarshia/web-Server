@@ -11,7 +11,10 @@ fn main() {
         println!("Incoming Connection [+]");
         let mut stream = stream.unwrap();
         let mut buffer = [0; 1024];
-        stream.read(&mut buffer).unwrap();
+        match stream.read(&mut buffer) {
+            Ok(_) => {}
+            Err(_) => return,
+        }
         println!("Request:\r\n{} ", String::from_utf8_lossy(&buffer[..]));
         let request = String::from_utf8_lossy(&buffer[..]);
         let request_line = request.lines().next().unwrap();
@@ -29,6 +32,10 @@ fn main() {
             fs::read_to_string(&"./www/home.html")
                 .unwrap_or(format!("reading file content failed [-]")),
         );
+        let index_content = String::from(
+            fs::read_to_string(&"./www/index.html")
+                .unwrap_or(format!("reading file content failed [-]")),
+        );
         let four04_content = String::from(
             fs::read_to_string(&"./www/404.html")
                 .unwrap_or(format!("reading file content failed [-]")),
@@ -36,7 +43,7 @@ fn main() {
         let mut header = format!("{} {}", "HTTP/1.1", http::StatusCode::OK);
         let mut body = String::from("");
         match uri_string {
-            "/" => body = home_content,
+            "/" => body = index_content,
             "/home" => body = home_content,
             _ => {
                 body = four04_content;
