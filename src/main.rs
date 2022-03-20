@@ -25,7 +25,7 @@ fn main() {
             Ok(i) => ip = i,
             _ => uri = "/500",
         }
-        println!("ip: {}", ip);
+        println!("IP: {}", ip);
         let mut buffer = [0; 1024];
         match stream.read(&mut buffer) {
             Ok(_) => {}
