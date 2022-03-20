@@ -10,6 +10,7 @@ fn main() {
     for stream in listener.incoming() {
         println!("Incoming Connection [+]");
         let mut stream = stream.unwrap();
+        println!("ip: {}", stream.local_addr().unwrap());
         let mut buffer = [0; 1024];
         match stream.read(&mut buffer) {
             Ok(_) => {}
