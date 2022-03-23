@@ -11,7 +11,7 @@ use std::ptr;
 
 fn main() {
     println!("Hello World");
-    let listener = TcpListener::bind("0.0.0.0:80").unwrap();
+    let listener = TcpListener::bind("0.0.0.0:8080").unwrap();
     for conn in listener.incoming() {
         println!("Incoming Connection [+]");
         let mut uri = "";
@@ -54,13 +54,17 @@ fn main() {
                 uri = "/500"
             }
         }
-        let home_content = String::from(
+        let home = String::from(
             fs::read_to_string(&"./www/home.html")
                 .unwrap_or(format!("reading file content failed [-]")),
         );
         let index_content = String::from(
             fs::read_to_string(&"./www/index.html")
-                .unwrap_or(format!("reading file content failed [-]")),
+                .unwrap_or(format!("reading file content failed [-]")),       
+        );
+        let index_css = String::from(
+            fs::read_to_string(&"./css/styles.css")
+                .unwrap_or(format!("reading file content failed [-]")),       
         );
         let four04_content = String::from(
             fs::read_to_string(&"./www/404.html")
@@ -78,7 +82,8 @@ fn main() {
         let mut body = String::from("");
         match uri {
             "/" => body = index_content,
-            "/home" => body = home_content,
+            "/css/styles.css" => body = index_css,
+            "/home" => body = home,
             "/500" => body = five00_content,
             "/register" => body = register,
             _ => {
@@ -87,7 +92,13 @@ fn main() {
             }
         }
         let response = format!("{} \r\n\r\n {}\r\n", header, body);
-        stream.write(response.as_bytes()).unwrap();
-        stream.flush().unwrap();
+        let streamWrite = match stream.write(response.as_bytes()) {
+            Ok(_) => {},
+            Err(_) => continue,
+        };
+        let streamFlush = match stream.flush() {
+            Ok(_) => println!("Request Completed [+]"),
+            Err(_) => continue,
+        };
     }
 }
