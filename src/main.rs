@@ -1,6 +1,6 @@
 use actix_files as fs;
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-use serde_derive::{Deserialize, Serialize};
+use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
+use serde_derive::{Deserialize};
 
 #[derive(Deserialize)]
 struct Register {
@@ -14,7 +14,7 @@ async fn main() -> std::io::Result<()> {
             .service(register)
             .service(fs::Files::new("/", "www").index_file("index.html"))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
