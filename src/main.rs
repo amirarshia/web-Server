@@ -1,7 +1,7 @@
 use actix_files as fs;
 use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use serde_derive::{Deserialize};
-
+use regex::Regex;
 
 
 #[derive(Deserialize)]
@@ -31,23 +31,36 @@ async fn register(request_body: web::Form<Register>) -> impl Responder {
     
     let email_refined = remove_whitespace(&request_body.email);
     
+    let re = Regex::new(r"(?x)
+    ^(?P<login>[^@\s]+)@
+    ([[:word:]]+\.)*
+    [[:word:]]+$
+    ").unwrap();
+    
+    let mut email_empty = true;
+
     if email_refined == "" {
         println!("Email was empty");
         HttpResponse::Found()
             .append_header(("Location", "/index.html"))
             .finish();
-    }
-    else {
-        println!("Email wasn't empty");
+    } else {
         println!("Email Received: {}", email_refined);
+        email_empty = false;
         HttpResponse::Found()
             .append_header(("Location", "/register.html"))
             .finish();
+        
     }
-    
-    
+
+    if email_empty == false && re.is_match(&email_refined) == true {
+        println!("The email is formatted correctly")
+    } else {
+        println!("Email isn't formatted correctly")
+    }
+
     HttpResponse::Found()
             .append_header(("Location", "/register.html"))
             .finish()
-    
+
 }
