@@ -1,0 +1,2 @@
+create database chobin;
+create table emails(email text, ts timestamp default now());
