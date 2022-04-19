@@ -33,34 +33,22 @@ async fn register(request_body: web::Form<Register>) -> impl Responder {
     
     let re = Regex::new(r"(?x)
     ^(?P<login>[^@\s]+)@
-    ([[:word:]]+\.)*
+    ([[:word:]]+\.)+
     [[:word:]]+$
     ").unwrap();
     
-    let mut email_empty = true;
 
-    if email_refined == "" {
-        println!("Email was empty");
+    if re.is_match(&email_refined) == true {
+        println!("The email is formatted correctly");
         HttpResponse::Found()
-            .append_header(("Location", "/index.html"))
-            .finish();
-    } else {
-        println!("Email Received: {}", email_refined);
-        email_empty = false;
-        HttpResponse::Found()
-            .append_header(("Location", "/register.html"))
-            .finish();
-        
-    }
-
-    if email_empty == false && re.is_match(&email_refined) == true {
-        println!("The email is formatted correctly")
-    } else {
-        println!("Email isn't formatted correctly")
-    }
-
-    HttpResponse::Found()
             .append_header(("Location", "/register.html"))
             .finish()
+    } else {
+        println!("Email isn't formatted correctly");
+        HttpResponse::Found()
+            .append_header(("Location", "/400.html"))
+            .finish()
+    }
+
 
 }
